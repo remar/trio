@@ -1,4 +1,5 @@
 #include "marker.h"
+#include "ids.h"
 
 Rage::ImageDefinition markerImage;
 
@@ -12,7 +13,7 @@ Rage::SpriteDefinition markerDef;
 Rage::Animation markerAnimation;
 
 markerDef.version = 1;
-markerDef.spriteID = 1;
+markerDef.spriteID = MARKER;
 markerDef.animationCount = 1;
 markerDef.animations = &markerAnimation;
 

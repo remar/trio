@@ -3,51 +3,42 @@
 #include <stdio.h>
 #include <time.h>
 
-Rage rage;
+#include "Input.h"
+#include "GameLogic.h"
 
-int board[7][7];
 int numbers[9] = {5, 6, 6, 6, 6, 6, 5, 5, 4};
 
-void initBoard()
+void setupGfx(Rage *rage)
 {
+  rage->init();
+  rage->selectOnTop(Rage::SUB);
+  rage->setupBackground(Rage::MAIN, 0, 24, 24);
 
+  consoleDemoInit();
+
+#include "numbersdef.h"
+  rage->loadTileSet(Rage::MAIN, &numbersDef);
+
+#include "markerdef.h"
+  rage->loadSprite(Rage::MAIN, &markerDef);
 }
 
 int main(void)
 {
   srand(time(0));
 
-  rage.init();
+  Rage rage;
+  setupGfx(&rage);
 
-  rage.selectOnTop(Rage::SUB);
-
-  rage.setupBackground(Rage::MAIN, 0, 24, 24);
-
-#include "numbersdef.h"
-  rage.loadTileSet(Rage::MAIN, &numbersDef);
-
-#include "markerdef.h"
-  rage.loadSprite(Rage::MAIN, &markerDef);
-
-  for(int i = 0;i < 11*8;i++)
-    rage.setTile(Rage::MAIN, 0, i%11, i/11, 1, 0);
-
-  for(int y = 0;y < 7;y++)
-    for(int x = 0;x < 7;x++)
-      {
-	  rage.setTile(Rage::MAIN, 0, x+2, y+1, 1, rand()%9+1);
-      }
-
-  consoleDemoInit();
-
-  printf("Please find: %d\n", rand()%50+1);
-
-  int marker = rage.createSpriteInstance(Rage::MAIN, 1);
-
-  rage.moveSpriteAbs(Rage::MAIN, marker, 24*2+4, 24*1+4);
+  Input input;
+  GameLogic gameLogic(&rage, &input);
 
   while(1)
     {
+      input.getInput();
+
+      gameLogic.update();
+
       rage.redraw();
     }
 

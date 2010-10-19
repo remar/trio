@@ -16,6 +16,16 @@ void setupGfx(Rage *rage)
 
   consoleDemoInit();
 
+  printf("Welcome to TrioDS!\n"
+	 "(c) Andreas Remar\n"
+	 "\n"
+	 "Instructions:\n"
+	 "To solve a puzzle, locate three\n"
+	 "consecutive numbers that are on\n"
+	 "a line that can be combined with"
+	 "a multiplication and an addition"
+	 "into the puzzle number.\n");
+
 #include "numbersdef.h"
   rage->loadTileSet(Rage::MAIN, &numbersDef);
 
@@ -25,10 +35,10 @@ void setupGfx(Rage *rage)
 
 int main(void)
 {
-  srand(time(0));
-
   Rage rage;
   setupGfx(&rage);
+
+  srand(time(0));
 
   Input input;
   GameLogic gameLogic(&rage, &input);

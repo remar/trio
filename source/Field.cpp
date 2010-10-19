@@ -51,15 +51,36 @@ Field::randomize()
   drawBoard();
 }
 
+void swap(int *a1, int *a2, int *b1, int *b2)
+{
+  int tempA, tempB;
+  tempA = *a1; tempB = *b1;
+  *a1 = *a2; *b1 = *b2;
+  *a2 = tempA; *b2 = tempB;
+}
+
 bool
-Field::checkSolution(int x1, int y1, int x2, int y2, int x3, int y3)
+Field::checkSolution(int solution, int x1, int y1, int x2, int y2, int x3, int y3)
 {
   // Check range
   if(x1 < 0 || x1 > 6 || x2 < 0 || x2 > 6 || x3 < 0 || x3 > 6
      || y1 < 0 || y1 > 6 || y2 < 0 || y2 > 6 || y3 < 0 || y3 > 6)
     return false;
 
-  // TODO: Check that solutions are on a line
+  // Sort points
+  if(x1+y1*7 > x2+y2*7)
+    swap(&x1, &x2, &y1, &y2);
+  if(x2+y2*7 > x3+y3*7)
+    swap(&x2, &x3, &y2, &y3);
+  if(x1+y1*7 > x2+y2*7)
+    swap(&x1, &x2, &y1, &y2);
+
+  // Check that solutions are on a line
+  if(!((x1 == x2 && x2 == x3 && y1 + 1 == y2 && y2 + 1 == y3) // Vertical line
+       || (y1 == y2 && y2 == y3 && x1 + 1 == x2 && x2 + 1 == x3) // Horizontal line
+       || (x1 + 1 == x2 && x2 + 1 == x3 && y1 + 1 == y2 && y2 + 1 == y3) // Diagonal line down right
+       || (x1 - 1 == x2 && x2 - 1 == x3 && y1 + 1 == y2 && y2 + 1 == y3))) // Diagonal line down left
+    return false;
 
   int a = board[x1][y1];
   int b = board[x2][y2];
@@ -69,5 +90,18 @@ Field::checkSolution(int x1, int y1, int x2, int y2, int x3, int y3)
   printf("%d * %d + %d = %d\n", a, c, b, a * c + b);
   printf("%d * %d + %d = %d\n", b, c, a, b * c + a);
 
+  if(a * b + c == solution)
+    return true;
+  if(a * c + b == solution)
+    return true;
+  if(b * c + a == solution)
+    return true;
+
   return false;
+}
+
+bool
+Field::possibleSolutions(int puzzle)
+{
+  return true;
 }

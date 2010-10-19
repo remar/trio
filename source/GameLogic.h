@@ -13,6 +13,8 @@ class GameLogic
   void update();
 
  private:
+  void newPuzzle();
+
   Rage *rage;
   Input *input;
 
@@ -30,6 +32,16 @@ class GameLogic
 
   Marker markers[3];
   int currentMarker;
+
+  int puzzle;
+  bool win;
+
+  int resultTimer;
+
+  int wins;
+  int fails;
+
+  int ticks;
 };
 
 #endif

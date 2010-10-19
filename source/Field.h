@@ -9,7 +9,8 @@ class Field
   Field(Rage *rage);
   void drawBoard();
   void randomize();
-  bool checkSolution(int x1, int y1, int x2, int y2, int x3, int y3);
+  bool checkSolution(int solution, int x1, int y1, int x2, int y2, int x3, int y3);
+  bool possibleSolutions(int puzzle);
 
  private:
   int board[7][7];

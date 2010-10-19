@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 GameLogic::GameLogic(Rage *rage, Input *input)
-  : rage(rage), input(input)
+  : rage(rage), input(input), win(false), resultTimer(0), wins(0), fails(0)
 {
   field = new Field(rage);
 
@@ -11,11 +11,42 @@ GameLogic::GameLogic(Rage *rage, Input *input)
 
   markers[0].selected = markers[1].selected = markers[2].selected = false;
   currentMarker = 0;
+
+  newPuzzle();
 }
 
 void
 GameLogic::update()
 {
+  ticks++;
+
+  if(resultTimer > 0)
+    {
+      if(--resultTimer == 0)
+	{
+	  if(win)
+	    {
+	      printf("Correct!\n");
+	      wins++;
+	    }
+	  else
+	    {
+	      printf("Fail!\n");
+	      fails++;
+	    }
+
+	  printf("Wins: %d, Fails: %d, Rank: %d\n", wins, fails, wins?ticks/wins/60:0);
+
+	  for(int i = 0;i < 3;i++)
+	    {
+	      rage->removeSpriteInstance(Rage::MAIN, markers[i].spriteID);
+	      markers[i].selected = false;
+	    }
+
+	  newPuzzle();
+	}
+    }
+
   if(input->keyPressed(KEY_TOUCH))
     {
       int x, y;
@@ -59,20 +90,12 @@ GameLogic::update()
 	     && markers[1].selected == true
 	     && markers[2].selected == true)
 	    {
-	      bool win = field->checkSolution(markers[0].x, markers[0].y,
-					      markers[1].x, markers[1].y,
-					      markers[2].x, markers[2].y);
+	      win = field->checkSolution(puzzle,
+					 markers[0].x, markers[0].y,
+					 markers[1].x, markers[1].y,
+					 markers[2].x, markers[2].y);
 
-	      if(win)
-		printf("Correct!\n");
-	      else
-		printf("Fail!\n");
-
-	      for(int i = 0;i < 3;i++)
-		{
-		  rage->removeSpriteInstance(Rage::MAIN, markers[i].spriteID);
-		  markers[i].selected = false;
-		}
+	      resultTimer = 30;
 	    }
 	}
     }  
@@ -80,5 +103,22 @@ GameLogic::update()
   if(input->keyPressed(KEY_A))
     {
       field->randomize();
+      newPuzzle();
     }
 }
+
+void
+GameLogic::newPuzzle()
+{
+  // TODO: Make sure that there actually is a solution for this puzzle
+  // on the board
+
+  do
+    {
+      puzzle = rand() % 50 + 1;
+    }
+  while(!field->possibleSolutions(puzzle));
+
+  printf("\nPlease find %d somewhere!\n", puzzle);
+}
+

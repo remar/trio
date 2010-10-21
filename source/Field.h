@@ -13,6 +13,8 @@ class Field
   bool possibleSolutions(int puzzle);
 
  private:
+  int checkSolutionInternal(int solution, int a, int b, int c);
+
   int board[7][7];
   Rage *rage;
 };

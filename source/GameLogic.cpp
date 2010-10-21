@@ -26,7 +26,6 @@ GameLogic::update()
 	{
 	  if(win)
 	    {
-	      printf("Correct!\n");
 	      wins++;
 	    }
 	  else
@@ -95,7 +94,7 @@ GameLogic::update()
 					 markers[1].x, markers[1].y,
 					 markers[2].x, markers[2].y);
 
-	      resultTimer = 30;
+	      resultTimer = 60;
 	    }
 	}
     }  

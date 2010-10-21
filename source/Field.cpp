@@ -86,16 +86,24 @@ Field::checkSolution(int solution, int x1, int y1, int x2, int y2, int x3, int y
   int b = board[x2][y2];
   int c = board[x3][y3];
 
-  printf("%d * %d + %d = %d\n", a, b, c, a * b + c);
-  printf("%d * %d + %d = %d\n", a, c, b, a * c + b);
-  printf("%d * %d + %d = %d\n", b, c, a, b * c + a);
+  char correct[] = "Correct! %d * %d %s %d = %d\n";
+  char plus[] = "+";
+  char minus[] = "-";
 
-  if(a * b + c == solution)
-    return true;
-  if(a * c + b == solution)
-    return true;
-  if(b * c + a == solution)
-    return true;
+  if(int corr = checkSolutionInternal(solution, a, b, c))
+    {
+      switch(corr)
+	{
+	case 1: printf(correct, a, b, plus, c, solution); break;
+	case 2: printf(correct, a, b, minus, c, solution); break;
+	case 3: printf(correct, a, c, plus, b, solution); break;
+	case 4: printf(correct, a, c, minus, b, solution); break;
+	case 5: printf(correct, b, c, plus, a, solution); break;
+	case 6: printf(correct, b, c, minus, a, solution); break;
+	}
+
+      return true;
+    }
 
   return false;
 }
@@ -103,5 +111,70 @@ Field::checkSolution(int solution, int x1, int y1, int x2, int y2, int x3, int y
 bool
 Field::possibleSolutions(int puzzle)
 {
-  return true;
+  bool solutionFound = false;
+
+  // Horizontal solutions
+  for(int y = 0;y < 7;y++)
+    for(int x = 0;x < 5;x++)
+      {
+	if(checkSolutionInternal(puzzle, board[x][y], board[x+1][y], board[x+2][y]))
+	  {
+	    solutionFound = true;
+	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+2, y+1, x+3, y+1);
+	  }
+      }
+
+  // Vertical solutions
+  for(int y = 0;y < 5;y++)
+    for(int x = 0;x < 7;x++)
+      {
+	if(checkSolutionInternal(puzzle, board[x][y], board[x][y+1], board[x][y+2]))
+	  {
+	    solutionFound = true;
+	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+1, y+2, x+1, y+3);
+	  }
+      }
+
+  // Diagonal down right solutions
+  for(int y = 0;y < 5;y++)
+    for(int x = 0;x < 5;x++)
+      {
+	if(checkSolutionInternal(puzzle, board[x][y], board[x+1][y+1], board[x+2][y+2]))
+	  {
+	    solutionFound = true;
+	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+2, y+2, x+3, y+3);
+	  }
+      }
+
+  // Diagonal down left solutions
+  for(int y = 0;y < 5;y++)
+    for(int x = 2;x < 7;x++)
+      {
+	if(checkSolutionInternal(puzzle, board[x][y], board[x-1][y+1], board[x-2][y+2]))
+	  {
+	    solutionFound = true;
+	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x, y+2, x-1, y+3);
+	  }
+      }
+
+  return solutionFound;
+}
+
+int
+Field::checkSolutionInternal(int solution, int a, int b, int c)
+{
+  if(a * b + c == solution)
+    return 1;
+  if(a * b - c == solution)
+    return 2;
+  if(a * c + b == solution)
+    return 3;
+  if(a * c - b == solution)
+    return 4;
+  if(b * c + a == solution)
+    return 5;
+  if(b * c - a == solution)
+    return 6;
+
+  return 0;
 }

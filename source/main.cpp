@@ -24,7 +24,8 @@ void setupGfx(Rage *rage)
 	 "consecutive numbers that are on\n"
 	 "a line that can be combined with"
 	 "a multiplication and an addition"
-	 "into the puzzle number.\n");
+	 "or subtraction into the puzzle\n"
+	 "number.\n");
 
 #include "numbersdef.h"
   rage->loadTileSet(Rage::MAIN, &numbersDef);

@@ -77,6 +77,9 @@ GameLogic::update()
 		if(markers[i].selected == false)
 		  break;
 
+	      if(i == 3) // Already placed 3 markers
+		return;
+
 	      markers[i].x = x;
 	      markers[i].y = y;
 	      markers[i].spriteID = rage->createSpriteInstance(Rage::MAIN, MARKER);

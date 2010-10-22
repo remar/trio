@@ -113,6 +113,9 @@ Field::possibleSolutions(int puzzle)
 {
   bool solutionFound = false;
 
+  // uncomment to print out all solutions
+  // #define PRINT_SOLUTION
+
   // Horizontal solutions
   for(int y = 0;y < 7;y++)
     for(int x = 0;x < 5;x++)
@@ -120,7 +123,9 @@ Field::possibleSolutions(int puzzle)
 	if(checkSolutionInternal(puzzle, board[x][y], board[x+1][y], board[x+2][y]))
 	  {
 	    solutionFound = true;
+#ifdef PRINT_SOLUTION
 	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+2, y+1, x+3, y+1);
+#endif
 	  }
       }
 
@@ -131,7 +136,9 @@ Field::possibleSolutions(int puzzle)
 	if(checkSolutionInternal(puzzle, board[x][y], board[x][y+1], board[x][y+2]))
 	  {
 	    solutionFound = true;
+#ifdef PRINT_SOLUTION
 	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+1, y+2, x+1, y+3);
+#endif
 	  }
       }
 
@@ -142,7 +149,9 @@ Field::possibleSolutions(int puzzle)
 	if(checkSolutionInternal(puzzle, board[x][y], board[x+1][y+1], board[x+2][y+2]))
 	  {
 	    solutionFound = true;
+#ifdef PRINT_SOLUTION
 	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x+2, y+2, x+3, y+3);
+#endif
 	  }
       }
 
@@ -153,7 +162,9 @@ Field::possibleSolutions(int puzzle)
 	if(checkSolutionInternal(puzzle, board[x][y], board[x-1][y+1], board[x-2][y+2]))
 	  {
 	    solutionFound = true;
+#ifdef PRINT_SOLUTION
 	    printf("SOLUTION: (%d,%d), (%d,%d), (%d,%d)\n", x+1, y+1, x, y+2, x-1, y+3);
+#endif
 	  }
       }
 

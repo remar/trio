@@ -6,13 +6,15 @@
 #include "Input.h"
 #include "GameLogic.h"
 
+#include "debug.h"
+
 int numbers[9] = {5, 6, 6, 6, 6, 6, 5, 5, 4};
 
 void setupGfx(Rage *rage)
 {
-  rage->init();
-  rage->selectOnTop(Rage::SUB);
-  rage->setupBackground(Rage::MAIN, 0, 24, 24);
+  TRY(rage, rage->init());
+  TRY(rage, rage->selectOnTop(Rage::SUB));
+  TRY(rage, rage->setupBackground(Rage::MAIN, 0, Rage::BG_MAP_256x256, 24, 24));
 
   consoleDemoInit();
 
@@ -28,15 +30,16 @@ void setupGfx(Rage *rage)
 	 "number.\n");
 
 #include "numbersdef.h"
-  rage->loadTileSet(Rage::MAIN, &numbersDef);
+  TRY(rage, rage->loadTileSet(Rage::MAIN, &numbersDef));
 
 #include "markerdef.h"
-  rage->loadSprite(Rage::MAIN, &markerDef);
+  TRY(rage, rage->loadSprite(Rage::MAIN, &markerDef));
 }
 
 int main(void)
 {
   Rage rage;
+
   setupGfx(&rage);
 
   srand(time(0));

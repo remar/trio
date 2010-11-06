@@ -12,7 +12,7 @@ Rage::SpriteDefinition markerDef;
 
 Rage::Animation markerAnimation;
 
-markerDef.version = 1;
+markerDef.version = 2;
 markerDef.spriteID = MARKER;
 markerDef.animationCount = 1;
 markerDef.animations = &markerAnimation;

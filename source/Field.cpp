@@ -1,12 +1,15 @@
 #include "Field.h"
 #include "ids.h"
 #include <stdio.h>
+#include "debug.h"
 
 Field::Field(Rage *rage)
   : rage(rage)
 {
-  for(int i = 0;i < 11*8;i++)
-    rage->setTile(Rage::MAIN, 0, i%11, i/11, NUMBERS, 0);
+  for(int i = 0;i < 11*11;i++)
+    {
+      TRY(rage, rage->setTile(Rage::MAIN, 0, i%11, i/11, NUMBERS, 0));
+    }
 
   //                1  2  3  4  5  6  7  8  9
   int numbers[9] = {5, 6, 6, 6, 6, 6, 5, 5, 4};
@@ -31,7 +34,7 @@ Field::drawBoard()
   for(int y = 0;y < 7;y++)
     for(int x = 0;x < 7;x++)
       {
-	rage->setTile(Rage::MAIN, 0, x+2, y+1, NUMBERS, board[x][y]);
+	TRY(rage, rage->setTile(Rage::MAIN, 0, x+2, y+1, NUMBERS, board[x][y]));
       }
 }
 

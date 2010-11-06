@@ -3,7 +3,7 @@
 
 Rage::TileSetDefinition numbersDef;
 
-numbersDef.version = 1;
+numbersDef.version = 2;
 numbersDef.tileSetID = NUMBERS;
 numbersDef.image.gfx = numbersTiles;
 numbersDef.image.gfxLen = numbersTilesLen;

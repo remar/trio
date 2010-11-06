@@ -32,8 +32,8 @@ void setupGfx(Rage *rage)
 #include "numbersdef.h"
   TRY(rage, rage->loadTileSet(Rage::MAIN, &numbersDef));
 
-#include "markerdef.h"
-  TRY(rage, rage->loadSprite(Rage::MAIN, &markerDef));
+#include "largemarkerdef.h"
+  TRY(rage, rage->loadSprite(Rage::MAIN, &largeMarkerDef));
 }
 
 int main(void)

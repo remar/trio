@@ -1,0 +1,18 @@
+# Include palette
+-p
+
+# Include gfx data
+-g
+
+# Gfx data type
+-gu16
+
+# 8bpp
+-gB8
+
+# Exclude map data
+-m!
+
+# Metatile height (marker-1 is 16x16 pixels)
+-Mh2
+-Mw2

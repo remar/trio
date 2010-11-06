@@ -9,8 +9,13 @@ GameLogic::GameLogic(Rage *rage, Input *input)
 
   field->randomize();
 
-  markers[0].selected = markers[1].selected = markers[2].selected = false;
-  currentMarker = 0;
+  largeMarker = 0;
+
+  penDown = false;
+
+  solutionProvided = false;
+
+  ticks = 0;
 
   newPuzzle();
 }
@@ -18,12 +23,51 @@ GameLogic::GameLogic(Rage *rage, Input *input)
 void
 GameLogic::update()
 {
+  if(largeMarker == 0)
+    {
+      largeMarker = rage->createSpriteInstance(Rage::MAIN, LARGE_MARKER);
+      rage->showSprite(Rage::MAIN, largeMarker, false);
+    }
+
   ticks++;
 
   if(resultTimer > 0)
     {
       if(--resultTimer == 0)
 	{
+	  rage->showSprite(Rage::MAIN, largeMarker, false);
+	  newPuzzle();
+	}
+
+      return;
+    }
+
+  if(input->keyPressed(KEY_TOUCH))
+    {
+      int x, y;
+
+      if(getPenTouch(&x, &y))
+	{
+	      startX = endX = x;
+	      startY = endY = y;
+	      
+	      rage->selectAnimation(Rage::MAIN, largeMarker, MARKER_1);
+	      rage->showSprite(Rage::MAIN, largeMarker, true);
+	      rage->moveSpriteAbs(Rage::MAIN, largeMarker, offsetX + x*24 + 4, offsetY + y*24 + 4);
+	      penDown = true;
+	}
+    }
+  else if(input->keyReleased(KEY_TOUCH))
+    {
+      penDown = false;
+
+      if(solutionProvided)
+	{
+	  // check solution
+	  win = field->checkSolution(puzzle, startX, startY,
+				     (startX + endX)/2, (startY + endY) / 2,
+				     endX, endY);
+
 	  if(win)
 	    {
 	      wins++;
@@ -36,71 +80,58 @@ GameLogic::update()
 
 	  printf("Wins: %d, Fails: %d, Rank: %d\n", wins, fails, wins?ticks/wins/60:0);
 
-	  for(int i = 0;i < 3;i++)
-	    {
-	      rage->removeSpriteInstance(Rage::MAIN, markers[i].spriteID);
-	      markers[i].selected = false;
-	    }
+	  resultTimer = 60;
 
-	  newPuzzle();
+	  solutionProvided = false;
+	}
+      else
+	{
+	  rage->showSprite(Rage::MAIN, largeMarker, false);
 	}
     }
 
-  if(input->keyPressed(KEY_TOUCH))
+  if(penDown)
     {
+      // User moving pen around
       int x, y;
-      input->getTouch(&x, &y);
-      x /= 24;
-      y /= 24;
 
-      if(x >= 2 && x <= 8 && y >= 1 && y <= 7)
+      if(getPenTouch(&x, &y))
 	{
-	  x -= 2; y -= 1;
-	  // Player selected board position x, y
-
-	  // Has the player selected this spot previously
-	  bool unselect = false;
-	  for(int i = 0;i < 3;i++)
+	  if(x != endX || y != endY)
 	    {
-	      if(markers[i].selected && markers[i].x == x && markers[i].y == y)
+	      endX = x;
+	      endY = y;
+
+	      // Is this a correct line?
+	      int xdel[17] = {0, 1, 2,  1,  2,  0,  0, -1, -2, -1, -2, -1, -2, 0, 0, 1, 2};
+	      int ydel[17] = {0, 0, 0, -1, -2, -1, -2, -1, -2,  0,  0,  1,  2, 1, 2, 1, 2};
+	      int anim[17] = {MARKER_1,
+			      MARKER_2_HORIZONTAL, MARKER_3_HORIZONTAL,
+			      MARKER_2_DOWNLEFT,   MARKER_3_DOWNLEFT,
+			      MARKER_2_VERTICAL,   MARKER_3_VERTICAL,
+			      MARKER_2_DOWNRIGHT,  MARKER_3_DOWNRIGHT,
+			      MARKER_2_HORIZONTAL, MARKER_3_HORIZONTAL,
+			      MARKER_2_DOWNLEFT,   MARKER_3_DOWNLEFT,
+			      MARKER_2_VERTICAL,   MARKER_3_VERTICAL,
+			      MARKER_2_DOWNRIGHT,  MARKER_3_DOWNRIGHT};
+	      for(int i = 0;i < 17;i++)
 		{
-		  rage->removeSpriteInstance(Rage::MAIN, markers[i].spriteID);
-		  markers[i].selected = false;
-		  unselect = true;
+		  if(startX == endX + xdel[i] && startY == endY + ydel[i])
+		    {
+		      rage->selectAnimation(Rage::MAIN, largeMarker, anim[i]);
+		      rage->moveSpriteAbs(Rage::MAIN, largeMarker,
+					  (startX < endX ? startX : endX) * 24 + offsetX + 4,
+					  (startY < endY ? startY : endY) * 24 + offsetY + 4);
+
+		      if(i > 0 && i%2 == 0)
+			solutionProvided = true;
+		      else
+			solutionProvided = false;
+		    }
 		}
 	    }
-
-	  if(!unselect)
-	    {
-	      int i;
-	      for(i = 0;i < 3;i++)
-		if(markers[i].selected == false)
-		  break;
-
-	      if(i == 3) // Already placed 3 markers
-		return;
-
-	      markers[i].x = x;
-	      markers[i].y = y;
-	      markers[i].spriteID = rage->createSpriteInstance(Rage::MAIN, MARKER);
-	      rage->moveSpriteAbs(Rage::MAIN, markers[i].spriteID, (x+2)*24+4, (y+1)*24+4);
-	      markers[i].selected = true;
-	    }
-
-	  // Check if all marks are placed
-	  if(markers[0].selected == true
-	     && markers[1].selected == true
-	     && markers[2].selected == true)
-	    {
-	      win = field->checkSolution(puzzle,
-					 markers[0].x, markers[0].y,
-					 markers[1].x, markers[1].y,
-					 markers[2].x, markers[2].y);
-
-	      resultTimer = 60;
-	    }
 	}
-    }  
+    }
 
   if(input->keyPressed(KEY_A))
     {
@@ -112,9 +143,6 @@ GameLogic::update()
 void
 GameLogic::newPuzzle()
 {
-  // TODO: Make sure that there actually is a solution for this puzzle
-  // on the board
-
   do
     {
       puzzle = rand() % 50 + 1;
@@ -124,3 +152,24 @@ GameLogic::newPuzzle()
   printf("\nPlease find %d somewhere!\n", puzzle);
 }
 
+bool
+GameLogic::getPenTouch(int *x, int *y)
+{
+  input->getTouch(x, y);
+
+  if(*x >= offsetX && *y >= offsetY)
+    {
+      *x -= offsetX;
+      *y -= offsetY;
+
+      *x /= 24;
+      *y /= 24;
+
+      if(*x >= 0 && *x <= 6 && *y >= 0 && *y <= 6)
+	{
+	  return true;
+	}
+    }
+
+  return false;
+}

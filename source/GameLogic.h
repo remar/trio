@@ -14,24 +14,12 @@ class GameLogic
 
  private:
   void newPuzzle();
+  bool getPenTouch(int *x, int *y);
 
   Rage *rage;
   Input *input;
 
   Field *field;
-
-  struct Marker
-  {
-    int spriteID;
-
-    int x;
-    int y;
-
-    bool selected;
-  };
-
-  Marker markers[3];
-  int currentMarker;
 
   int puzzle;
   bool win;
@@ -42,6 +30,20 @@ class GameLogic
   int fails;
 
   int ticks;
+
+  int largeMarker;
+
+  bool penDown;
+
+  static const int offsetX = 24*2;
+  static const int offsetY = 24*1;
+
+  int startX;
+  int startY;
+  int endX;
+  int endY;
+
+  bool solutionProvided;
 };
 
 #endif

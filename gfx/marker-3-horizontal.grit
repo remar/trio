@@ -13,8 +13,6 @@
 # Exclude map data
 -m!
 
-# Metatile height (tiles are 16x16 pixels)
--Mh2
-
-# Metatile width (tiles are 16x16 pixels)
--Mw2
+# Metatile height (marker-3-horizontal is 64x32 pixels)
+-Mh4
+-Mw8
